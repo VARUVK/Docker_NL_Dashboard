@@ -1,21 +1,23 @@
-# Byte-compiled / optimized / DLL files
+# Python leftovers
 __pycache__/
 *.py[codz]
 *$py.class
-
-# Distribution / packaging
-build/
-dist/
-*.egg-info/
-*.egg
-
-# Unit test / coverage reports
-htmlcov/
+.pytest_cache/
 .coverage
 .coverage.*
-.cache
 coverage.xml
-.pytest_cache/
+htmlcov/
+
+# Build output
+build/
+dist/
+coverage/
+
+# Node / frontend
+Source Code/node_modules/
+Source Code/dist/
+Source Code/coverage/
+Source Code/*.log
 
 # Environments
 .env
@@ -23,11 +25,11 @@ coverage.xml
 env/
 venv/
 ENV/
+Source Code/.env*
+!Source Code/.env.example
 
-# Streamlit
-.streamlit/secrets.toml
-
-# IDE
+# IDE / OS
 .vscode/
 .idea/
+.DS_Store
 tempCodeRunnerFile.py

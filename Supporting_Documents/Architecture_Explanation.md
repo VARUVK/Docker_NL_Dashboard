@@ -1,43 +1,72 @@
 # Architecture Explanation
 
-A deeper look at how the Docker NL Health Dashboard is structured and how it satisfies the hackathon's AI-capability requirements.
+This note explains the architecture of the updated Docker NL Health Dashboard and how the current codebase fits together.
 
-## Design principle: translate → execute → present
+## Design principle: query → interpret → execute → explain
 
-The system never lets the language model touch Docker directly. Instead it constrains the LLM to a single, safe job — turning English into a small, fixed JSON action — and then deterministic Python code executes that action. This keeps the tool auditable (every interpreted intent is shown to the user) and safe (the action space is closed and read-only).
+The updated app keeps a clear separation between:
+
+1. **User interaction** in the React dashboard
+2. **Intent translation** through the LLM service
+3. **Execution** through the Docker service layer
+4. **Explanation and presentation** back in the UI
+
+That separation helps keep the application understandable, testable, and safer to operate.
 
 ```mermaid
 flowchart LR
-    subgraph Translate
-        A[English query] --> B[ai_parser.py]
-        B --> C[JSON action]
-    end
-    subgraph Execute
-        C --> D[app.py router]
-        D --> E[docker_engine.py]
-        E --> F[(Docker Engine)]
-    end
-    subgraph Present
-        F --> G[dashboard.py]
-        G --> H[Cards · Table · Chart · Summary · Logs]
-    end
+    U["User query or action"] --> FE["React dashboard"]
+    FE --> API["Express API routes"]
+    API --> AG["AgentController"]
+    AG --> LLM["LLMService"]
+    AG --> DX["DockerExecutor"]
+    DX --> MODE{"simulation or live"}
+    MODE --> SIM["seeded dataset"]
+    MODE --> LIVE["Docker Engine"]
+    AG --> RESP["result + commentary"]
+    RESP --> FE
 ```
 
-## Module responsibilities
+## Main modules
 
-- **`ai_parser.py`** — The intelligence boundary. Holds the system prompt defining the action space, calls the Claude API when a key is present, strips stray markdown fences, validates the JSON, and falls back to a regex/keyword parser otherwise. Both paths emit the *same* schema.
-- **`docker_engine.py`** — The integration boundary. Wraps the Docker SDK: client creation with a ping health check, container listing with enriched attributes (uptime, health, ports, restart count), bounded log retrieval, crash detection over a time window, and aggregate stats. Every function degrades gracefully to an empty/safe value when the daemon is unreachable.
-- **`app.py`** — The orchestrator. Renders the page, captures the query, calls the parser, routes the resulting action to the right engine function, and hands results to the renderers. Contains the offline guard and CSV export.
-- **`dashboard.py`** — The presentation boundary. Pure rendering: metric cards, the colour-coded table, the status-distribution chart, the log viewer, the plain-English summary, the sidebar, and the offline panel.
+- **`Source Code/src/App.tsx`**  
+  The main UI container. It loads dashboard data, triggers natural-language queries, opens logs and inspection panels, and drives control actions such as start, stop, and restart.
 
-## How the AI-capability requirements are met
+- **`Source Code/server.ts`**  
+  The server entrypoint. It binds the Express API and the Vite application together on port `3000`, exposes health and Docker routes, and serves the built frontend in production.
 
-**Agent loop.** `ai_parser` + `app` form a perceive → decide → act → report loop: perceive the user's words, decide the structured action, act via the Docker SDK, and report a summarised, visual result. The `unknown` action and the offline guard are the loop's safe exits.
+- **`Source Code/src/server/dockerExecutor.ts`**  
+  The Docker execution layer. It stores the simulation dataset, handles live Docker Engine access through `dockerode`, computes summaries and metrics, retrieves logs, and performs supported container actions.
 
-**MCP-style tool consumption.** The architecture mirrors the Model Context Protocol pattern: a fixed catalogue of tools (list, count, logs, crashed, health, search) is described to the model, the model emits a structured call naming a tool and its arguments, and a separate executor runs it against a real system (Docker). Swapping the in-process executor for an MCP server exposing these same tools would require no change to the parsing contract — which is why this is listed as a future enhancement.
+- **`Source Code/src/server/llmService.ts`**  
+  The language layer. It translates natural-language requests into structured intents, selects between Gemini and Ollama, checks provider availability, and generates explanatory commentary.
 
-**External API / service integration.** Two live integrations: the **Anthropic Claude API** for parsing, and the **Docker Engine API** through the official Docker SDK for Python.
+- **`Source Code/src/server/agentController.ts`**  
+  The orchestration layer. It runs the multi-step loop that translates a query, executes a candidate action, records observations, and produces a final explanation for the UI.
 
-## Data shape contract
+## Why simulation mode matters
 
-Every container is represented as a flat dict with the same keys end-to-end (`id`, `name`, `image`, `status`, `health`, `uptime`, `ports`, `started_at`, `restart_count`, and `exit_code` for crashes). This single contract is what lets the sample-data fixtures stand in for a live daemon during testing.
+The current app supports both **simulation** and **live** operation:
+
+- **Simulation mode** gives the team a predictable environment for demos, screenshots, and basic walkthroughs.
+- **Live mode** connects to a reachable Docker Engine endpoint and surfaces real state, logs, images, and control actions.
+
+This makes the app usable even when a Docker host is not available during review.
+
+## AI capability coverage
+
+- **Agent loop**  
+  The application interprets the query, executes one or more bounded actions, and returns structured observations plus commentary.
+
+- **External service integration**  
+  The app integrates with **Gemini**, **Ollama**, and the **Docker Engine API**.
+
+- **Structured tool-style execution**  
+  The LLM does not call Docker directly. It first produces a structured intent, and the backend executes that intent through explicit service code.
+
+## Safety model
+
+- The backend exposes only explicit routes.
+- Container lifecycle actions are limited to supported operations.
+- Unsupported or unsafe actions are blocked or routed to a guarded response.
+- Provider failures degrade gracefully through fallbacks instead of crashing the UI.

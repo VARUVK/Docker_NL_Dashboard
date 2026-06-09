@@ -1,32 +1,31 @@
 # Assumptions and Limitations
 
-A consolidated, evaluator-facing reference. The README carries the summary; this document explains the reasoning behind each point.
+This document captures the operational assumptions behind the updated TypeScript application.
 
 ## Assumptions
 
 | # | Assumption | Why |
 |---|---|---|
-| 1 | Docker daemon is reachable locally via `docker.from_env()` | The tool is built for the operator's own machine / Docker Desktop, matching the hackathon brief's local-troubleshooting scenario. |
-| 2 | "Crashed" = `exited` state with `FinishedAt` inside the look-back window | Docker has no single "crashed" status; recent exit is the closest faithful signal. Exit code is shown so the user can judge whether it was an error. |
-| 3 | "Stopped" → `exited`; "active" → `running` | These are the natural-language-to-Docker mappings encoded in both parser paths to avoid ambiguity. |
-| 4 | The AI parser is optional | Requiring an API key would make the tool unusable offline; the keyword parser guarantees baseline function. |
-| 5 | Docker timestamps are UTC | The SDK returns RFC3339 UTC timestamps; uptime and crash windows are computed accordingly. |
-| 6 | The app is read-only | Non-technical users are the audience; observation-only removes the risk of accidental container disruption. |
+| 1 | The app is run with Node.js and npm available | The updated source is a Vite + Express + TypeScript project |
+| 2 | Port `3000` is available | The server currently binds to port `3000` |
+| 3 | Live Docker mode uses a reachable Docker Engine endpoint | The UI can switch into live mode, but it still depends on Docker connectivity |
+| 4 | A Gemini API key is optional | The app can still operate with Ollama or fall back in limited ways |
+| 5 | Ollama may be local or remote | The configuration UI accepts a configurable base URL and model |
+| 6 | Simulation mode is valid for demos and evaluation | The seeded dataset is intentionally included to support walkthroughs without a live Docker host |
 
 ## Limitations
 
-| # | Limitation | Impact | Mitigation / future work |
+| # | Limitation | Impact | Notes |
 |---|---|---|---|
-| 1 | Local daemon only | No remote hosts, Swarm, or Kubernetes | Docker contexts / multi-host support is a planned enhancement |
-| 2 | Read-only | Cannot restart a crash-looping container from the UI | Guarded lifecycle actions are a planned enhancement |
-| 3 | Keyword fallback is bounded | Free-form phrasing may fall through to `unknown` without an API key | Supply an Anthropic API key for full natural-language coverage |
-| 4 | Crash detection needs retained containers | Containers run with `--rm` leave no record | Out of scope; documented behaviour |
-| 5 | Bounded log tail (default 50) | Not a log-aggregation platform | Tail count is adjustable per query |
-| 6 | No persistence | No historical health trends | Time-series storage is a planned enhancement |
+| 1 | Port is fixed in the current server code | Running another service on `3000` will conflict | Could be made configurable later |
+| 2 | Live Docker mode assumes the engine is exposed in a reachable way | A local desktop Docker setup may still need TCP exposure or proxying | Documented in setup notes |
+| 3 | LLM quality depends on provider availability | Gemini and Ollama behavior can vary | The app includes provider status checks and fallback handling |
+| 4 | Simulation data is synthetic | Demo output may differ from a real Docker host | This is intentional for reviewability |
+| 5 | The repository does not currently include a dedicated automated frontend test suite | Validation relies on lint/build checks and manual scenario coverage | Test guidance is documented in `Test_Cases/` |
+| 6 | The current UI is optimized for the delivered scenarios, not every Docker workflow | Advanced orchestration or cluster management is out of scope | Focus remains on Docker host monitoring and diagnosis |
 
-## Known graceful-degradation behaviours
+## Graceful degradation
 
-- **Docker offline** → a remediation panel is shown and the app halts cleanly rather than throwing.
-- **Malformed AI response** → fence-stripping + try/except, then automatic fallback to the keyword parser.
-- **Container without a healthcheck** → health reported as `N/A` instead of erroring.
-- **Unrecognised query** → `unknown` action, a warning, and a safe default of showing all containers.
+- If a provider is unavailable, the UI exposes its status and the backend avoids hard failure where possible.
+- If live Docker access fails, the app can remain usable in simulation mode.
+- If a container action is unsupported or blocked, the app returns a bounded error rather than executing blindly.

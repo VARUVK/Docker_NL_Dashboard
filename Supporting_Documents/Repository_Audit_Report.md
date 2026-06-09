@@ -1,50 +1,46 @@
 # Repository Audit Report
 
-A self-audit of this submission against the official Infinite Computer Solutions requirements, prepared so evaluators can verify completeness at a glance.
+This audit reflects the repository after the source update to the React + Express + TypeScript version of the Docker NL Health Dashboard.
 
-## Submission package checklist
+## Current submission checklist
 
 | Requirement | Status | Location / Evidence |
 |---|---|---|
-| Resume of every team member (PDF) | ✅ | `Team Members Resume/` — 4 PDFs (one converted from DOCX as uploaded) |
-| Public GitHub repository, complete source code | ✅ | `Source Code/` — 4 Python modules + `requirements.txt` |
-| README: setup, run, architecture, assumptions, limitations | ✅ | `README.md` — all five sections present, plus Mermaid diagrams |
-| Demo video (5–7 min) | ⏳ Pending recording | Link goes in `Demo Video Link.txt` (intentionally blank) |
-| `Demo Video Link.txt` exists and is blank | ✅ | Empty file at repo root (0 bytes) |
-| AI Usage Note (1 page): helped / got wrong / best prompts | ✅ | `AI_Usage_Note.md` |
-| Prompt documentation | ✅ | `Prompt_Documentation.md` (Claude, Google AI Studio, Antigravity) |
-| Sample data: inputs + expected outputs | ✅ | `Sample_Data/` — queries, fixture, AI responses, expected results |
-| Test cases covering the happy path | ✅ | `Test_Cases/` — pytest suite (**33 passed**) + documented matrix |
+| Public GitHub repository | ✅ | `VARUVK/Docker_NL_Dashboard` |
+| Updated source code | ✅ | `Source Code/` |
+| Setup and run documentation | ✅ | `README.md`, `Source Code/README.md` |
+| Demo video link | ✅ | `Demo Video Link.txt` |
+| AI usage note | ✅ | `AI_Usage_Note.md` |
+| Prompt documentation | ✅ | `Prompt_Documentation.md` |
+| Supporting architecture notes | ✅ | `Supporting_Documents/` |
+| Team resumes | ✅ | `Team Members Resume/` |
+| Test guidance | ✅ | `Test_Cases/` |
+| Sample natural-language prompts | ✅ | `Sample_Data/sample_queries.txt` |
 
-## Mandatory requirements
+## What was updated in this refresh
 
-| Requirement | Status | Evidence |
-|---|---|---|
-| AI-assisted development | ✅ | `AI_Usage_Note.md`, `Prompt_Documentation.md` |
-| Prompt documentation notes | ✅ | `Prompt_Documentation.md` |
-| At least one AI capability | ✅ (all three) | Agent loop, MCP-style tool consumption, external API integration — see `Architecture_Explanation.md` |
+- Replaced the old Python application in `Source Code/` with the new TypeScript project from the uploaded archive.
+- Added the new demo video URL to `Demo Video Link.txt`.
+- Rewrote repository documentation to match the new app behavior and stack.
+- Normalized wording so the deliverables read as work completed by the team.
+- Removed stale Python-specific sample and test artifacts that no longer matched the current app.
 
-## Evaluation-criteria coverage
+## AI capability coverage
 
-| # | Criterion | Covered |
-|---|---|---|
-| 1 | Ship working code with AI assistants | ✅ Runnable app + AI docs |
-| 2 | Building AI agents | ✅ `ai_parser.py` intent agent + routing |
-| 3 | Building/consuming MCP | ✅ Structured tool-call schema → executor |
-| 4 | Service/API integration | ✅ Claude API + Docker Engine API |
-| 5 | End-to-end execution & usability | ✅ Full pipeline, offline handling, export |
-| 6 | Code quality, docs, demonstration | ✅ Modular code, docstrings, tests, this audit |
+| Capability | Evidence |
+|---|---|
+| Natural-language agent workflow | `Source Code/src/server/agentController.ts` |
+| External AI provider integration | `Source Code/src/server/llmService.ts` |
+| Docker service integration | `Source Code/src/server/dockerExecutor.ts` |
+| Full-stack delivery | `Source Code/server.ts`, `Source Code/src/App.tsx` |
 
-## Code-quality notes
+## Validation intent
 
-- Four modules with single responsibilities; no circular dependencies.
-- Type hints and docstrings throughout the source.
-- Defensive error handling at both the API and Docker boundaries.
-- Tests run with zero external dependencies (Docker and API mocked).
+The repository is structured so the team can validate:
 
-## Outstanding items before final push
+- dependency installation
+- TypeScript compilation
+- production build generation
+- manual dashboard scenarios in both simulation and live modes
 
-1. Record the 5–7 minute demo video and paste its Google Drive link into `Demo Video Link.txt`.
-2. Create the public GitHub repository and push, preserving a clean commit history.
-
-*All other deliverables are complete and require no further editing.*
+The detailed validation checklist lives in `Test_Cases/`.

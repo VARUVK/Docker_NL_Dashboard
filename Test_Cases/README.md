@@ -1,29 +1,32 @@
-# Test Cases
+# Test Approach
 
-Automated `pytest` suite plus a documented test matrix for the Docker NL Health Dashboard. The suite covers the **happy path** and runs **without a Docker daemon or API key** (the Docker SDK and stats are mocked).
+This folder documents how the updated Docker NL Health Dashboard should be validated.
 
-## Contents
+The current application is a full-stack TypeScript project and does **not** use the old Python test suite anymore. Validation for this version focuses on:
 
-| File | What it covers |
-|---|---|
-| `test_ai_parser.py` | Natural-language → JSON action mapping (keyword/regex fallback parser) |
-| `test_docker_engine.py` | Stats aggregation, status filtering, offline handling, helper functions (Docker mocked) |
-| `test_dashboard.py` | Plain-English summary generation for every action type |
-| `Test_Case_Matrix.md` | Functional, Integration, and User-Acceptance test cases with IDs, inputs, expected/actual results, and status |
+1. dependency installation
+2. static TypeScript checks
+3. production build generation
+4. manual scenario coverage for the main dashboard flows
 
-## Running the tests
+## Recommended commands
 
-From the **repository root**:
+Run these from `Source Code/`:
 
 ```bash
-pip install pytest
-pytest Test_Cases/ -v
+npm install
+npm run lint
+npm run build
 ```
 
-Expected outcome:
+## Manual validation areas
 
-```
-33 passed
-```
+- dashboard load in simulation mode
+- natural-language query execution
+- Gemini/Ollama configuration flow
+- Docker live-mode configuration flow
+- container start / stop / restart controls
+- log panel and detail panels
+- health and summary cards
 
-No Docker daemon and no Anthropic API key are required — Docker interactions are mocked and the deterministic keyword parser is exercised directly. Live-Docker and live-API paths are listed as manual cases in `Test_Case_Matrix.md` and demonstrated in the walkthrough video.
+See `Test_Case_Matrix.md` for the full checklist.

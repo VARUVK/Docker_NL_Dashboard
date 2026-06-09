@@ -1,37 +1,37 @@
 # AI Usage Note
 
-**Project:** Docker NL Health Dashboard
+**Project:** Docker NL Health Dashboard  
 **Submission:** Infinite Computer Solutions — AI-Assisted Development Hackathon
 
-AI coding assistants were used throughout development. The tools involved were **Claude**, **Google AI Studio**, and **Antigravity**. This note summarises where they helped, where they got things wrong, and the prompts that proved most useful.
+AI-assisted tooling was used throughout design and implementation of the current application version. The main tools involved were **Google AI Studio**, **Gemini**, and general-purpose coding assistants used for iteration, refactoring, and documentation support.
 
 ---
 
-## A. What AI helped with
+## What AI helped with
 
-- **Architecture brainstorming.** Shaping the three-phase *translate → execute → present* pipeline and splitting it into four single-responsibility modules (`app.py`, `ai_parser.py`, `docker_engine.py`, `dashboard.py`) rather than one monolithic script.
-- **Code scaffolding.** Generating first drafts of the Docker SDK calls (`containers.list(all=True)`, `.reload()`, log fetching) and the Streamlit layout (metric cards, columns, expanders, sidebar).
-- **Prompt iteration.** Refining the system prompt in `ai_parser.py` so the model returns *only* valid JSON for a fixed action set, including the explicit "no markdown, no explanation" instruction and the markdown-fence stripping safeguard.
-- **Fallback parser design.** Working out the regex and keyword rules that let the app function deterministically with no API key.
-- **Robustness handling.** Suggesting graceful handling for the Docker-offline case, malformed AI responses, and missing container health data.
-- **Documentation refinement.** Drafting docstrings, this submission package, and the README's Mermaid diagrams.
+- **Frontend scaffolding** for the React dashboard layout, icon usage, and state-driven panels.
+- **Backend scaffolding** for the Express server, API routes, and Vite development server integration.
+- **LLM workflow design** for translating natural-language Docker questions into structured intents with reasoning.
+- **Fallback planning** for Gemini-to-Ollama provider switching and simulation-mode behavior.
+- **Docker integration review** for log parsing, summary generation, metrics display, and guarded container actions.
+- **Documentation drafting** for README updates, architecture notes, and test guidance.
 
-## B. What AI got wrong
+## What AI got wrong or needed correction
 
-- **Hallucinated / wrong API shapes.** Early suggestions referenced Docker SDK attributes and Streamlit calls that don't exist or were renamed; these had to be corrected against the official docs (e.g. correct handling of `attrs["State"]["Health"]`, which is absent on containers without a healthcheck).
-- **Overengineered solutions.** Initial drafts proposed background threads, websockets, and a database for "live" refresh — far beyond the brief. We replaced this with optional `streamlit-autorefresh` and session state.
-- **Brittle JSON parsing.** The model sometimes wrapped its JSON in markdown fences despite instructions, which would have crashed `json.loads`; we added fence-stripping and a try/except fallback.
-- **Prompt misinterpretation.** The parser occasionally conflated "stopped" with "paused"; we pinned the mappings explicitly ("stopped = exited") in both the system prompt and the keyword parser.
-- **Timezone bugs.** Suggested naïve datetime parsing for uptime/crash windows; we corrected it to treat Docker timestamps as UTC.
+- **Generic starter metadata.** The uploaded app still used placeholder metadata such as `react-example`, which had to be renamed for the repository.
+- **Environment assumptions.** Some generated notes assumed AI Studio-only hosting and needed to be rewritten for a normal GitHub repository workflow.
+- **Cross-platform script issues.** The generated `clean` script used a Unix-style command and was updated to a Node-based command that also works on Windows.
+- **Overconfident documentation.** Starter docs described the app too generically and did not reflect the actual Docker, Gemini, and Ollama workflow implemented in the code.
+- **Repository drift.** Existing repository documents still described the previous Python version, so they were manually reviewed and rewritten to match the current TypeScript app.
 
-## C. Best prompts used during development
+## Most useful prompt directions
 
-1. *"Design a Python module that converts natural-language Docker questions into a small, fixed set of JSON actions, with a keyword-based fallback that needs no API key. List the exact action schemas."* — produced the action space that became `ai_parser.py`.
-2. *"Write the Docker SDK code to list all containers (including stopped) and return name, image, status, health, uptime, ports, and restart count, handling containers that have no healthcheck."* — produced the core of `get_all_containers()`.
-3. *"Given a parsed action dict, write a router that calls the right docker_engine function and renders results in Streamlit, including a graceful path when Docker is offline."* — shaped the orchestration in `app.py`.
-4. *"Review this system prompt and make the model return only raw JSON — no prose, no markdown fences — for these seven action types."* — hardened the parser prompt.
-5. *"Generate happy-path pytest cases for the keyword parser and the stats aggregation that don't require a running Docker daemon."* — seeded the `Test_Cases/` suite.
+1. *"Design a Docker health dashboard that supports both simulation mode and live Docker Engine mode, with a clear separation between UI, API routes, and Docker execution logic."*
+2. *"Translate free-form Docker troubleshooting questions into a small structured intent object with target selection, reasoning, and safe fallback behavior."*
+3. *"Generate a React operations dashboard that shows container cards, logs, controls, system metrics, filters, and a natural-language panel."*
+4. *"Add dual-provider AI support so the app can use Gemini when available and Ollama as a configurable alternative."*
+5. *"Rewrite the repository documentation so it accurately reflects a Vite + Express + TypeScript app instead of an older Python implementation."*
 
 ---
 
-**Final implementation decisions, testing, validation, and integration were performed by the student team.** AI assistants accelerated drafting and review, but every line was verified, corrected where wrong, and integrated by the team against real Docker behaviour.
+**Final implementation decisions, testing, validation, and repository updates were completed by the team.** AI tools accelerated drafting and iteration, but the team reviewed, corrected, and integrated the final result.
