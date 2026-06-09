@@ -4,8 +4,6 @@
 
 A natural-language operations dashboard that lets anyone ask questions like *"Which containers crashed in the last hour?"* or *"Show logs of nginx"* and get back clean, visual answers — without typing a single `docker` command.
 
-Submission for **Infinite Computer Solutions** · AI-Assisted Development Hackathon
-
 ---
 
 ## Problem Statement
@@ -309,4 +307,4 @@ The project satisfies **all three** optional capabilities (only one was required
 
 ## Responsible AI Acknowledgement
 
-AI coding assistants (Claude, Google AI Studio, and Antigravity) were used during development for scaffolding, refactoring, and documentation, as detailed in `AI_Usage_Note.md` and `Prompt_Documentation.md`. At runtime, the Claude API is used only to translate user phrasing into a constrained, auditable JSON action schema — every interpreted intent is shown to the user before execution, and the application is strictly read-only against the Docker daemon. No personal data is collected, and the tool functions fully without any AI service via its deterministic fallback parser. **Final implementation decisions, testing, validation, and integration were performed by the student team.**
+AI coding assistants (Claude, Google AI Studio, and Antigravity) were used during development for scaffolding, refactoring, and documentation, as detailed in `AI_Usage_Note.md` and `Prompt_Documentation.md`. At runtime, the Claude API is used only to translate user phrasing into a constrained, auditable JSON action schema — every interpreted intent is shown to the user before execution, and the application is strictly read-only against the Docker daemon. No personal data is collected, and the tool functions fully without any AI service via its deterministic fallback parser. **Final implementation decisions, testing, validation, and integration were performed by the team.**
