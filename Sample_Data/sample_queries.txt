@@ -1,0 +1,16 @@
+# Sample natural-language queries accepted by the Docker NL Health Dashboard
+# These map to the action schema in ai_parser.py and were used to validate the app.
+
+Show all running containers
+Show stopped containers
+Show containers that are restarting
+Which containers crashed in the last hour?
+Which containers crashed in the last 6 hours?
+How many containers are active?
+How many total containers do I have?
+Show docker health overview
+Show unhealthy containers
+Show logs of nginx
+Show last 100 lines of logs for web
+Find containers named web
+List all containers

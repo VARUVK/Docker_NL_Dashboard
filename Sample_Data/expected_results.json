@@ -1,0 +1,69 @@
+{
+  "_comment": "Expected outputs when each sample query runs against container_status.json. Verifies the full pipeline: parsed action, filtered containers, and AI summary text from dashboard.generate_summary().",
+  "cases": [
+    {
+      "query": "Show all running containers",
+      "parsed_action": { "action": "list_containers", "status": "running" },
+      "matched_names": ["web", "api", "cache"],
+      "count": 3,
+      "summary": "🟢 Found **3 running** container(s)."
+    },
+    {
+      "query": "Show stopped containers",
+      "parsed_action": { "action": "list_containers", "status": "exited" },
+      "matched_names": ["migrate", "old-job"],
+      "count": 2,
+      "summary": "🔴 Found **2 exited** container(s)."
+    },
+    {
+      "query": "Show containers that are restarting",
+      "parsed_action": { "action": "list_containers", "status": "restarting" },
+      "matched_names": ["worker"],
+      "count": 1,
+      "summary": "🟡 Found **1 restarting** container(s)."
+    },
+    {
+      "query": "How many containers are active?",
+      "parsed_action": { "action": "count_containers", "status": "running" },
+      "count": 3,
+      "summary": "📊 There are **3 running** container(s)."
+    },
+    {
+      "query": "How many total containers do I have?",
+      "parsed_action": { "action": "count_containers", "status": "all" },
+      "count": 6,
+      "summary": "📊 There are **6 all** container(s)."
+    },
+    {
+      "query": "Show unhealthy containers",
+      "parsed_action": { "action": "list_containers", "status": "unhealthy" },
+      "matched_names": ["cache"],
+      "count": 1,
+      "summary": "📦 Found **1 unhealthy** container(s)."
+    },
+    {
+      "query": "Find containers named web",
+      "parsed_action": { "action": "search_containers", "query": "web" },
+      "matched_names": ["web"],
+      "count": 1,
+      "summary": "🔍 Found **1 container(s)** matching **'web'**."
+    },
+    {
+      "query": "Show logs of nginx",
+      "parsed_action": { "action": "show_logs", "container": "nginx", "tail": 50 },
+      "summary": "📄 Showing logs for container **nginx**."
+    },
+    {
+      "query": "Show docker health overview",
+      "parsed_action": { "action": "health_overview" },
+      "expected_stats": {
+        "total": 6,
+        "running": 3,
+        "stopped": 2,
+        "restarting": 1,
+        "paused": 0,
+        "unhealthy": 1
+      }
+    }
+  ]
+}
