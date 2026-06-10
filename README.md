@@ -6,12 +6,6 @@ This repository now contains the updated application version built with **React 
 
 ---
 
-## What changed in this version
-
-- The previous Python/Streamlit implementation has been replaced with the updated TypeScript application in `Source Code/`.
-- The source now includes a Vite frontend, an Express server, Docker Engine integration via `dockerode`, and dual LLM support for **Gemini** and **Ollama**.
-- Repository documentation has been updated to reflect the new app and to refer to work completed **by the team**.
-
 ## Core capabilities
 
 - **Natural-language Docker diagnostics** powered by a structured intent pipeline.
