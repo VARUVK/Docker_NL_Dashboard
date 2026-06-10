@@ -4,8 +4,6 @@
 
 This repository now contains the updated application version built with **React + Vite + Express + TypeScript**. The app lets a team inspect container health, run natural-language diagnostics, switch between **simulation** and **live Docker** modes, and perform guarded container actions from a single interface.
 
-Submission for **Infinite Computer Solutions — AI-Assisted Development Hackathon**
-
 ---
 
 ## What changed in this version
