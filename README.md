@@ -11,8 +11,7 @@ This repository now contains the updated application version built with **React 
 ## Core capabilities
 
 - **Natural-language Docker diagnostics** powered by a structured intent pipeline.
-- **Dual LLM provider support** with Gemini as the cloud option and Ollama as the local or remote option.
-- **Simulation mode** with seeded containers and fluctuating metrics for demos and offline review.
+- **LLM provider support** with Ollama as the local or remote option.
 - **Live Docker mode** for connecting to a Docker Engine endpoint such as `http://127.0.0.1:2375`.
 - **Container controls** for start, stop, and restart actions.
 - **Container logs and runtime inspection** directly inside the dashboard.
@@ -42,9 +41,8 @@ flowchart TD
     API --> AG["AgentController"]
     AG --> LLM["LLMService"]
     AG --> DX["DockerExecutor"]
-    LLM --> P["Gemini or Ollama"]
+    LLM --> P["Ollama"]
     DX --> DM{"Mode"}
-    DM -->|Simulation| SIM["Seeded container dataset"]
     DM -->|Live| DOCKER["Docker Engine API"]
     AG --> FE
     FE --> OUT["Cards · tables · logs · controls · commentary"]
@@ -82,7 +80,7 @@ sequenceDiagram
 | Frontend | React 19 + Vite |
 | Backend | Express + TypeScript |
 | Docker integration | `dockerode` |
-| AI providers | Google Gemini (`@google/genai`) and Ollama |
+| AI providers | Ollama |
 | Icons / UI motion | `lucide-react`, `motion` |
 | Build tooling | Vite, esbuild, tsx |
 
@@ -110,8 +108,6 @@ npm install
 
 Copy `Source Code/.env.example` to a local env file such as `.env.local` or `.env`, then set the values you need:
 
-```bash
-GEMINI_API_KEY=your_key_here
 OLLAMA_URL=http://127.0.0.1:11434
 OLLAMA_MODEL=llama3
 ```
@@ -138,8 +134,6 @@ npm start
 - Ask: `Which containers are unhealthy right now?`
 - Ask: `Show logs for auth-api`
 - Ask: `Which container is using the most CPU?`
-- Switch between **Simulation** and **Live** mode
-- Change the active LLM provider between **Gemini** and **Ollama**
 - Start, stop, or restart a container from the dashboard controls
 
 ---
