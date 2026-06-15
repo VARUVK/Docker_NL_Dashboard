@@ -1,5 +1,7 @@
 # 🐳 Docker NL Health Dashboard
 
+https://docker-nl-ics.onrender.com/
+
 **A full-stack Docker operations dashboard with natural-language querying, live container controls, and simulation mode for demos.**
 
 This repository now contains the updated application version built with **React + Vite + Express + TypeScript**. The app lets a team inspect container health, run natural-language diagnostics, switch between **simulation** and **live Docker** modes, and perform guarded container actions from a single interface.
